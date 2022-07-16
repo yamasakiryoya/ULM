@@ -621,5 +621,5 @@ def test_func(model, device, loader, K, CV=None):
     MZE_A, MAE_A, MSE_A = MZE_A/n, MAE_A/n, MSE_A/n
     MZE_S, MAE_S, MSE_S = MZE_S/n, MAE_S/n, MSE_S/n
     #out: 10
-    return loss, MZE_Z, MAE_Z, sqrt(MSE_Z), MZE_A, MAE_A, sqrt(MSE_A), MZE_S, MAE_S, sqrt(MSE_S)
+    return loss, MZE_Z, MAE_Z, MSE_Z, MZE_A, MAE_A, MSE_A, MZE_S, MAE_S, MSE_S
 

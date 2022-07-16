@@ -23,3 +23,14 @@ for a in [0,1,2]:
                 data = np.loadtxt("./Results/%s/%s/%s-%d.csv"%(method,task,name,size),delimiter = ",")
                 ME = data[:100,3]
             print(name, "\n$%.4f_{%.4f}$"%(np.mean(ME),np.std(ME)))
+
+
+for a in [0,1,2]:
+    for b in [0,1,2,3,4,5,6,7]:
+        if a!=2 or b<=4:
+            name = dataname_set[a][b]
+            ME = np.zeros(100)
+            if os.path.isfile("./Results/%s/%s/%s-%d.csv"%(method,task,name,size)):
+                data = np.loadtxt("./Results/%s/%s/%s-%d.csv"%(method,task,name,size),delimiter = ",")
+                ME = data[:100,4]
+            print(name, "\n$%.4f_{%.4f}$"%(np.mean(ME),np.std(ME)))

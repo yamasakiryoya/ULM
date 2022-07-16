@@ -122,9 +122,9 @@ class PO_CRL(nn.Module):
             pro[:,k] *= torch.sigmoid(tmp[:,k])
         return pro
 #heteroscedastic models#
-class OH_ORD_CL(nn.Module):
+class HET_ORD_CL(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_ORD_CL, self).__init__()
+        super(HET_ORD_CL, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -154,9 +154,9 @@ class OH_ORD_CL(nn.Module):
         tmp = torch.cat([-10.**6*torch.ones(tmp.shape[0],1).float(), tmp, 10.**6*torch.ones(tmp.shape[0],1).float()], dim=1)
         pro = torch.sigmoid(tmp[:,1:]) - torch.sigmoid(tmp[:,:-1])
         return pro
-class OH_ACL(nn.Module):
+class HET_ACL(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_ACL, self).__init__()
+        super(HET_ACL, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -187,9 +187,9 @@ class OH_ACL(nn.Module):
         pro = -tmp2
         pro = pro.softmax(dim=1)
         return pro
-class OH_CRL(nn.Module):
+class HET_CRL(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_CRL, self).__init__()
+        super(HET_CRL, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -330,9 +330,9 @@ class PO_ORD_ACL(nn.Module):
         pro = -tmp2
         pro = pro.softmax(dim=1)
         return pro
-class OH_ORD_ACL(nn.Module):
+class HET_ORD_ACL(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_ORD_ACL, self).__init__()
+        super(HET_ORD_ACL, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -414,9 +414,9 @@ class PO_VS_SL(nn.Module):
         pro = -torch.square(tmp)
         pro = pro.softmax(dim=1)
         return pro
-class OH_VS_SL(nn.Module):
+class HET_VS_SL(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_VS_SL, self).__init__()
+        super(HET_VS_SL, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -490,9 +490,9 @@ class BIN(nn.Module):
         pro = torch.log(pro)/torch.exp(self.s)
         pro = pro.softmax(dim=1)
         return pro
-class OH_BIN(nn.Module):
+class HET_BIN(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_BIN, self).__init__()
+        super(HET_BIN, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -543,9 +543,9 @@ class POI(nn.Module):
         pro = pro.softmax(dim=1)
         return pro
 
-class OH_POI(nn.Module):
+class HET_POI(nn.Module):
     def __init__(self, d, M, K):
-        super(OH_POI, self).__init__()
+        super(HET_POI, self).__init__()
         self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
         self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
         self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
@@ -582,15 +582,38 @@ def unimodality(pro, device, K):
     amaxp = labeling_Z(pro, device, K)
     for i in range(len(pro)):
         flag = 1.
+        """
         for k in range(max([0, amaxp[i]-K]), amaxp[i]):
             if pro[i,k] > pro[i,k+1]:
                 flag = 0.
         for k in range(amaxp[i], min([K-1, amaxp[i]+K])):
             if pro[i,k] < pro[i,k+1]:
                 flag = 0.
+        """
+        for k in range(amaxp[i]):
+            if pro[i,k] > pro[i,k+1]:
+                flag = 0.
+        for k in range(amaxp[i], K-1):
+            if pro[i,k] < pro[i,k+1]:
+                flag = 0.
         unimo += flag
     return unimo
 
+def decay_rates(pro, device, K):
+    de_ra = 0.
+    amaxp = labeling_Z(pro, device, K)
+    for i in range(len(pro)):
+        flag = 1.
+        if amaxp[i]>1:
+            for k in range(amaxp[i]-1):
+                if pro[i,k]/pro[i,k+1] > pro[i,k+1]/pro[i,k+2]:
+                    flag = 0.
+        if amaxp[i]<K-2:
+            for k in range(amaxp[i]+1, K-1):
+                if pro[i,k]/pro[i,k-1] < pro[i,k+1]/pro[i,k]:
+                    flag = 0.
+        de_ra += flag
+    return de_ra
 
 #====================  models  ====================#
 #training function#
@@ -608,7 +631,7 @@ def train_func(model, device, loader, optimizer):
 def test_func(model, device, loader, K, CV=None):
     model.eval()
     n, loss = 0, 0.
-    MU = 0.
+    MU, DR = 0., 0.
     with torch.no_grad():
         for X, Y in loader:
             X, Y = X.to(device), Y.to(device)
@@ -617,10 +640,12 @@ def test_func(model, device, loader, K, CV=None):
             loss += F.nll_loss(torch.log(pro), Y, reduction='sum')
             #
             MU += unimodality(pro, device, K)
+            DR += decay_rates(pro, device, K)
             #
             n += len(Y)
     loss = loss/n
     MU = MU/n
+    DR = DR/n
     #out: 10
-    return loss, MU
+    return loss, MU, DR
 

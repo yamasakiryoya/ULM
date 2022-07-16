@@ -21,7 +21,8 @@ TR, MP, EP, IS = 100, 10, 1000, 1
 datatype_set = ['DR5','DR10','OR','SY']
 dataname_set = [['abalone-5','bank1-5','bank2-5','calhousing-5','census1-5','census2-5','computer1-5','computer2-5'], 
                 ['abalone-10','bank1-10','bank2-10','calhousing-10','census1-10','census2-10','computer1-10','computer2-10'], 
-                ['car','ERA','LEV','SWD','winequality-red']]
+                ['car','ERA','LEV','SWD','winequality-red'], 
+                ['sy1','sy2']]
 
 #dataset
 args = sys.argv
@@ -48,7 +49,7 @@ def learning(seed, train_data, test_data, node):
     optimizer = optim.Adam(model.parameters(), lr=.1**4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=(10.**4)**(1./EP))
     #learning
-    results = np.zeros((EP//IS,3))
+    results = np.zeros((EP//IS,4))
     for e in range(1,EP+1):
         MF.train_func(model, device, train_loader, optimizer)
         if e%IS == 0:
@@ -62,15 +63,15 @@ def traintest(seed, results):
     #load dataset
     train_data, test_data = train_test_split(trte_data, train_size=size_set[C], random_state=seed, stratify=trte_data[:,-1])
     #traintest
-    tmp = np.zeros((len(node_set),EP//IS,3))
-    tmpP = np.zeros((len(node_set),3))
+    tmp = np.zeros((len(node_set),EP//IS,4))
+    tmpP = np.zeros((len(node_set),4))
     for i in range(len(node_set)):
         setproctitle("%s:%d:%d:%d:%d:%d"%(method, A, B, C, seed, i))
         print(dataname_set[A][B], size_set[C], seed, i)
         tmp[i,:,:] = learning(seed, train_data, test_data, node_set[i])
         tmpP[i,:] = tmp[i,MF.back_argmin(tmp[i,:,1]),:]
     #summary
-    res  = np.zeros(4)
+    res  = np.zeros(5)
     parP = MF.back_argmin(tmpP[:,1]); res[0] = parP; res[1:] = tmpP[parP,:]
     results[seed] = res.tolist()
     print(res)
