@@ -20,7 +20,7 @@ dataname_set = [['abalone-5','bank1-5','bank2-5','calhousing-5','census1-5','cen
 
 method_set = ['BIN','POI','PO-ORD-ACL','PO-VS-SL',
               'OH-BIN','OH-POI','OH-ORD-ACL','OH-VS-SL',
-              'ACL','ORD-ACL','SL','VS-SL']
+              'ORD-ACL','VS-SL','ACL','SL']
 for task in ['P','Z','A','S']:
     for a in [0,1,2]:
         for b in [0,1,2,3,4,5,6,7]:
