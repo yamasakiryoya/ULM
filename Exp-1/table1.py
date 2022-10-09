@@ -10,7 +10,7 @@ dataname_set = [['abalone-5','bank1-5','bank2-5','calhousing-5','census1-5','cen
                 ['car','ERA','LEV','SWD','winequality-red']]
 
 
-method ='SL'
+method = 'SL'
 task = 'P'
 size = 800
 

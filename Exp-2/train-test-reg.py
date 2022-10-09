@@ -33,6 +33,69 @@ dimension = trte_data.shape[1]-1
 classnum  = int(np.max(trte_data[:,-1])-np.min(trte_data[:,-1])+1)
 print(dataname_set[A][B], size_set[C], samplenum, dimension, classnum)
 
+
+class reg(nn.Module):
+    def __init__(self, d, M):
+        super(reg, self).__init__()
+        self.g1 = nn.Linear(d, M); torch.nn.init.normal_(self.g1.weight, mean=0., std=.1); torch.nn.init.normal_(self.g1.bias, mean=0., std=.1)
+        self.g2 = nn.Linear(M, M); torch.nn.init.normal_(self.g2.weight, mean=0., std=.1); torch.nn.init.normal_(self.g2.bias, mean=0., std=.1)
+        self.g3 = nn.Linear(M, M); torch.nn.init.normal_(self.g3.weight, mean=0., std=.1); torch.nn.init.normal_(self.g3.bias, mean=0., std=.1)
+        self.g4 = nn.Linear(M, 1); torch.nn.init.normal_(self.g4.weight, mean=0., std=.1); torch.nn.init.normal_(self.g4.bias, mean=0., std=.1)
+    def forward(self, x):
+        g = torch.sigmoid(self.g1(x))
+        g = torch.sigmoid(self.g2(g))
+        g = torch.sigmoid(self.g3(g))
+        g = self.g4(g)
+        return g
+def train_func_reg(model, device, loader, optimizer):
+    model.train()
+    for batch_idx, (X, Y) in enumerate(loader):
+        X, Y = X.to(device), Y.to(device)
+        optimizer.zero_grad()
+        G = model(X)
+        if method=="AD":
+            loss = F.l1_loss(G, Y.float())
+        if method=="SQ":
+            loss = F.mse_loss(G, Y.float())
+        loss.backward()
+        optimizer.step()
+def test_func_reg(model, device, loader, K, CV=None):
+    model.eval()
+    n, loss = 0, 0.
+    MZE_Z, MAE_Z, MSE_Z, MZE_A, MAE_A, MSE_A, MZE_S, MAE_S, MSE_S = 0., 0., 0., 0., 0., 0., 0., 0., 0.
+    with torch.no_grad():
+        for X, Y in loader:
+            X, Y = X.to(device), Y.to(device)
+            G = model(X)
+            if method=="AD":
+                loss += F.l1_loss(G, Y.float(), reduction='sum')
+            if method=="SQ":
+                loss += F.mse_loss(G, Y.float(), reduction='sum')
+            #
+            pre = torch.round(torch.clamp(G, min=0.0, max=K-1.0)+.5)
+            #
+            MZE_Z += torch.sum(Y != pre).float()
+            if CV!='CV': MAE_Z += torch.sum(torch.abs(Y.float() - pre.float())).float()
+            if CV!='CV': MSE_Z += torch.sum(torch.square(Y.float() - pre.float())).float()
+            #
+            if CV!='CV': MZE_A += torch.sum(Y != pre).float()
+            MAE_A += torch.sum(torch.abs(Y.float() - pre.float())).float()
+            if CV!='CV': MSE_A += torch.sum(torch.square(Y.float() - pre.float())).float()
+            #
+            if CV!='CV': MZE_S += torch.sum(Y != pre).float()
+            if CV!='CV': MAE_S += torch.sum(torch.abs(Y.float() - pre.float())).float()
+            MSE_S += torch.sum(torch.square(Y.float() - pre.float())).float()
+            #
+            n += Y.shape[0]
+    loss = loss/n
+    MZE_Z, MAE_Z, MSE_Z = MZE_Z/n, MAE_Z/n, MSE_Z/n
+    MZE_A, MAE_A, MSE_A = MZE_A/n, MAE_A/n, MSE_A/n
+    MZE_S, MAE_S, MSE_S = MZE_S/n, MAE_S/n, MSE_S/n
+    #out: 10
+    return loss, MZE_Z, MAE_Z, MSE_Z, MZE_A, MAE_A, MSE_A, MZE_S, MAE_S, MSE_S
+
+
+
 #learning function
 def learning(seed, train_data, test_data, node):
     #set seed, device
@@ -40,20 +103,20 @@ def learning(seed, train_data, test_data, node):
     device = torch.device('cpu')
     #arrange dataset
     train_X, test_X = torch.FloatTensor(train_data[:,:-1]), torch.FloatTensor(test_data[:,:-1])
-    train_Y, test_Y = torch.LongTensor(train_data[:,-1]),   torch.LongTensor(test_data[:,-1])
+    train_Y, test_Y = torch.LongTensor(train_data[:,-1]).reshape(-1,1), torch.LongTensor(test_data[:,-1]).reshape(-1,1)
     train_loader = DataLoader(TensorDataset(train_X, train_Y), batch_size=batc_set[C], shuffle=True, drop_last=True)
     test_loader  = DataLoader(TensorDataset(test_X,  test_Y),  batch_size=len(test_Y))
     #set model, optimizer
-    model = eval("MF."+method.replace('-','_'))(dimension, node, classnum).to(device)
+    model = reg(dimension, node).to(device)
     optimizer = optim.Adam(model.parameters(), lr=.1**4)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=(10.**4)**(1./EP))#this setting was beter than constant and descending rates.
     #learning
     results = np.zeros((EP//IS,11))
     for e in range(1,EP+1):
-        MF.train_func(model, device, train_loader, optimizer)
+        train_func_reg(model, device, train_loader, optimizer)
         if e%IS == 0:
             results[e//IS-1,0]  = e
-            results[e//IS-1,1:] = MF.test_func(model, device, test_loader, classnum, 'CV')
+            results[e//IS-1,1:] = test_func_reg(model, device, test_loader, classnum, 'CV')
         scheduler.step()
     return results
 

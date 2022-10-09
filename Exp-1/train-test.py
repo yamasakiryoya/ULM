@@ -47,7 +47,7 @@ def learning(seed, train_data, test_data, node):
     #set model, optimizer
     model = eval("MF."+method.replace('-','_'))(dimension, node, classnum).to(device)
     optimizer = optim.Adam(model.parameters(), lr=.1**4)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=(10.**4)**(1./EP))
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=(10.**4)**(1./EP))#this setting was beter than constant and descending rates.
     #learning
     results = np.zeros((EP//IS,4))
     for e in range(1,EP+1):
