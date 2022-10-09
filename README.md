@@ -1,5 +1,6 @@
 # Unimodal Likelihood Models for Ordinal Regression
 Published in Transactions on Machine Learning Research
+pdf: https://openreview.net/pdf?id=1l0sClLiPc
 
 ## For Figures 2-6
 1. python figure2.py (in Fig for Figure 2)
